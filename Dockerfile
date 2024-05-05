@@ -1,23 +1,29 @@
-# Start your image with a node base image
-FROM node:18-alpine
+# syntax=docker/dockerfile:1
 
-# The /app directory should act as the main application directory
-WORKDIR /app
+# Comments are provided throughout this file to help you get started.
+# If you need more help, visit the Dockerfile reference guide at
+# https://docs.docker.com/go/dockerfile-reference/
 
-# Copy the app package and package-lock.json file
-COPY package*.json ./
+# Want to help us make this template better? Share your feedback here: https://forms.gle/ybq9Krt8jtBL3iCk7
 
-# Copy local directories to the current local directory of our docker image (/app)
-COPY ./src ./src
-COPY ./public ./public
+ARG NODE_VERSION=20.12.2
 
-# Install node packages, install serve, build the app, and remove dependencies at the end
-RUN npm install \
-    && npm install -g serve \
-    && npm run build \
-    && rm -fr node_modules
+# Fetching the latest node image on alpine linux
+FROM node:alpine AS development
 
-EXPOSE 3000
+# Declaring env
+ENV NODE_ENV development
 
-# Start the app using serve command
-CMD [ "serve", "-s", "build" ]
+# Setting up the work directory
+WORKDIR /react-app
+
+# Installing dependencies
+COPY ./package*.json /react-app
+
+RUN npm install
+
+# Copying all the files in our project
+COPY . .
+
+# Starting our application
+CMD ["npm","start"]
